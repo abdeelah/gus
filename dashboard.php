@@ -7,10 +7,15 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$sql = $conn->prepare("SELECT module_name, exam_date FROM modules WHERE user_id = ? ORDER BY exam_date ASC");
-$sql->execute([$_SESSION['user_id']]);
-$rows = $sql->fetchAll(PDO::FETCH_ASSOC);
+$sql1 = $conn->prepare("SELECT module_name, exam_date FROM modules WHERE user_id = ? ORDER BY exam_date ASC");
+$sql1->execute([$_SESSION['user_id']]);
+$rowsByDate = $sql1->fetchAll(PDO::FETCH_ASSOC);
+
+$sql2 = $conn->prepare("SELECT module_name, difficulty  FROM modules  WHERE user_id = ? ORDER BY difficulty DESC");
+$sql2->execute([$_SESSION['user_id']]);
+$rowsByDifficulty = $sql2->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +65,7 @@ $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
             font-size: 14px;
         }
 
-        .add { color: #1e293b; }
+        .add { color: #273f65; }
         .logout { color: #dc2626; }
 
         .modules {
@@ -69,6 +74,7 @@ $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
             display: flex;
             flex-direction: column;
             gap: 8px;
+            
         }
 
         .module-row {
@@ -93,16 +99,29 @@ $rows = $sql->fetchAll(PDO::FETCH_ASSOC);
             <a href="add_module.php" class="add">+ Add module</a>
             <a href="logout.php" class="logout">Logout</a>
             <a href="module.php" class="add">Liste of Modules </a>
+            <a href="generate_plan.php" class="add"> AI generator </a>
         </div>
 
-        <div class="modules">
-            <?php foreach ($rows as $row): ?>
-                <div class="module-row">
-                    <?= htmlspecialchars($row["module_name"]) ?>
-                    <span><?= htmlspecialchars($row["exam_date"]) ?></span>
-                </div>
-            <?php endforeach; ?>
+  <!-- Ordered by date -->
+<div class="modules">
+    Exams ordered by date:
+    <?php foreach ($rowsByDate as $row): ?>
+        <div class="module-row">
+            <?= htmlspecialchars($row["module_name"]) ?>
+            <span><?= htmlspecialchars($row["exam_date"]) ?></span>
         </div>
-    </div>
-</body>
-</html> 
+    <?php endforeach; ?>
+</div>
+
+<!-- Ordered by difficulty -->
+<div class="modules">
+    Exams ordered by difficulty:
+    <?php foreach ($rowsByDifficulty as $row): ?>
+        <div class="module-row">
+            <?= htmlspecialchars($row["module_name"]) ?>
+            <span><?= htmlspecialchars($row["difficulty"]) ?></span>
+        </div>
+    <?php endforeach; ?>
+</div>
+    </body>
+    </html>
