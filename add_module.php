@@ -178,6 +178,5 @@ try {
     <button type="submit" name="submit">Register</button>
   </form>
 </div>
-<a href="module.php"></a>
 </body>
 </html>
